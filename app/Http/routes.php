@@ -15,15 +15,20 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::auth();
 
+Route::get('/home', 'HomeController@index');
 
+Route::group(['middleware'=>['auth','admin'], 'middlewareGroups'=>'web'], function(){
 
-Route::group(['middlewareGroups'=>['web']], function(){
-	Route::get('/home', 'HomeController@index');
-	Route::auth();
-	
-	Route::resource('/task', 'TaskController');
-		
+	Route::get('/task/create', 'TaskController@create');
+	Route::post('/task/store', 'TaskController@store');
+	Route::get('/task/{task}/edit', 'TaskController@edit');
+	Route::put('/task/{task}/update', 'TaskController@update');
+	Route::delete('/task/{task}/delete','TaskController@destroy');
 
+});
 
+Route::group(['middleware'=>'auth', 'middlewareGroups'=>'web'], function(){
+	Route::get('/task', 'TaskController@index');
 });
